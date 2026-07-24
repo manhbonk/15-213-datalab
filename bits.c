@@ -220,7 +220,22 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int signx = (x >> 31) & 1;
+  int signy = (y >> 31) & 1;
+
+  // y - x
+  int diff = y + (~x + 1);
+  // Dấu của y - x
+  int signdiff = (diff >> 31) & 1;
+
+  // y và x cùng dấu và y - x >= 0 
+  // Hay signx ^ signy = 0 và signdiff = 0
+  int case1 = !(signx ^ signy) & !signdiff;
+
+  // y và x trái dấu và x âm
+  int case2 = (signx ^ signy) & signx;
+
+  return case1 + case2;
 }
 //4
 /* 
