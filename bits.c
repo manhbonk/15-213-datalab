@@ -303,7 +303,30 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+    unsigned exponent = (uf >> 23) & 0xff;
+    // 0x7fffff
+    int temp = (0x7f << 16) | (0xff << 8) | (0xff);
+    unsigned fraction = uf & temp;
+
+
+    // NaN
+    if (exponent == 0xff)
+        return uf;
+
+    if (exponent == 0) {
+        fraction = fraction << 1;
+
+	// Giữ đúng 1 bit sign rồi cộng với fraction mới
+        return (uf & (2 << 30)) | fraction;
+    }
+
+    exponent++;
+
+    // Overflow
+    if (exponent == 0xff)
+        return (uf & (2 << 30)) | (0xff << 23);
+
+    return uf + (1 << 23);
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
