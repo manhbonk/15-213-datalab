@@ -341,7 +341,35 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+	unsigned sign = uf >> 31;
+	unsigned exponent = (uf >> 23) & 0xff;
+	int ex = exponent - 127;
+	unsigned fraction = uf & 0x7fffff;
+	unsigned so = fraction | (1 << 23);
+
+	// NaN and infinity
+	if (ex > 30) {
+		return 0x80000000u;
+	}
+	
+	if (ex < 0) {
+		return 0;
+	}
+	
+	// Nếu ex > 23, ta dịch trái
+	if (ex > 23) {
+		so = so << (ex - 23);
+	} else {
+		so = so >> (23 - ex);
+	}
+
+	uf = so;
+
+	// Nếu là số âm
+	if (sign) {
+		uf = ~uf + 1;
+	}
+    	return uf;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
