@@ -385,5 +385,18 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+	if (x > 127) {
+		return 0x7f800000;
+	} else if (x > -127) {
+		unsigned exponent = x + 127;
+		return exponent << 23;
+	} else if (-149 <= x && x < -126) {
+		int fraction = 1 << (x + 149);
+		return fraction;
+	} else {
+		// x < -149
+		return 0;
+	}
+	return 0;
 }
+
